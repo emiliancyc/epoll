@@ -24,7 +24,6 @@ void addToClients(char** msg, int fd_C);
 int accept_new_client();
 void serve_client(int fd, uint32_t events);
 void handle_login(const char* msg, size_t len, int fd);
-void handle_user_list(const char* msg, size_t len, int fd);
 
 int main(int argc, const char *argv[])
 {
@@ -60,7 +59,7 @@ int main(int argc, const char *argv[])
         return 1;
     }
 
-    epoll_fd = epoll_create(10);
+    epoll_fd = epoll_create(2);
     if (epoll_fd < 0) {
         printf("Cannot create epoll\n");
         close(srv_fd);
@@ -137,11 +136,11 @@ void serve_client(int fd, uint32_t events)
 		if(len > 0) {
 			if(msg[0] =='2') {
 				printf("%s\n",msg);
-				handle_login(msg, len, fd);
+				//handle_login(msg, len, es[i].data.fd);
 			}
 			else if(msg[0] == '6') {
 				printf("%s\n",msg);
-				handle_user_list(msg, len, fd);
+				//handle_userlist(msg, len, es[i].data.fd);
 			}
 		}
 		free(msg);
@@ -191,8 +190,4 @@ void handle_login(const char* msg, size_t len, int fd)
 	//		* send ack ("1.0") if user added, send nack otherwise ("1.1.errromessage")
 	//		* if nack sent then clear user (close its fd, remove from epoll and remove from user list if needed)
 }
-
-void handle_user_list(const char* msg, size_t len, int fd){
 }
-
-
