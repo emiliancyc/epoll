@@ -82,11 +82,7 @@ static char** print_users(user_list* ul, size_t size) {
 
 	size_t i = 0, count = 0, offset = 0, totallen = 0;
 	char** result = 0;
-	//string = malloc(sizeof(char));
 	for (; i < ul->ctx->size; ++i) {
-		//string = malloc(sizeof(ul->ctx->users[i]->nick));
-		//string = ul->ctx->users[i]->nick;
-		//printf("%s\n",ul->ctx->users[i]->nick);
 		if (ul->ctx->users[i])
 			++count;
 	}
@@ -94,10 +90,11 @@ static char** print_users(user_list* ul, size_t size) {
 
 	if (count) {
 		result = malloc(count * sizeof(char*));
-		i=0;
+		i = 0;
 		for (; i < ul->ctx->size; ++i) {
 			if (ul->ctx->users[i]) {
-				result[offset] = malloc(strlen((ul->ctx->users[i]->nick) + 1) * sizeof(char));
+				result[offset] = malloc(
+						strlen((ul->ctx->users[i]->nick) + 1) * sizeof(char));
 				strcpy(result[offset], ul->ctx->users[i]->nick);
 				++offset;
 				//TODO zliczać liczbe stringów do size

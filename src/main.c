@@ -7,19 +7,13 @@
 #include <sys/epoll.h>
 #include <arpa/inet.h>
 #include "user_list.h"
-//#include "user_list.h"
 
-int CNT = 1024;
-int srv_fd = -1;
-int epoll_fd = -1;
-int wsk = 0;
 //extern int errno;
 
-user** USERS;
-
+int srv_fd = -1;
+int epoll_fd = -1;
 
 size_t receive_msg(char** msg, int fd);
-void addToClients(char** msg, int fd_C);
 int accept_new_client();
 void serve_client(int fd, uint32_t events, user_list*);
 void handle_login(const char* msg, size_t len, int fd, user_list*);
@@ -31,19 +25,16 @@ int main(int argc, const char *argv[]) {
 		printf("Zla liczba argumentow! Podaj tylko jeden!\n");
 		return -1;
 	}
-	USERS = malloc(CNT * sizeof(user*));
-	memset(USERS, 0, CNT * (sizeof(user*)));
-
-	int i = 0;
 
 	time_t t;
 	srand((unsigned) time(&t));
 	unsigned short int port = ((rand() % 500) + 8000);
 	printf("%d\n", port);
 
+	int CNT = atoi(argv[1]);
+
 	struct sockaddr_in srv_addr;
 	struct epoll_event e, es[CNT]; //e dany event  es[] tablica eventow do obslugi epoll-wielu klientow
-
 	memset(&srv_addr, 0, sizeof(srv_addr)); // memset zeruje nam te strukturki
 	memset(&e, 0, sizeof(e));
 
@@ -56,6 +47,7 @@ int main(int argc, const char *argv[]) {
 	srv_addr.sin_family = AF_INET;
 	srv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	srv_addr.sin_port = htons(port);
+
 	if (bind(srv_fd, (struct sockaddr*) &srv_addr, sizeof(srv_addr)) < 0) {
 		printf("Cannot bind socket\n");
 		close(srv_fd);
@@ -87,12 +79,9 @@ int main(int argc, const char *argv[]) {
 	size_t cap = CNT;
 	user_list* lista = create_ul(cap);
 
+	int i = 0;
 	for (;;) {
 		i = epoll_wait(epoll_fd, es, CNT, -1);
-
-
-
-
 
 		if (i < 0) {
 			printf("Cannot wait for events\n");
@@ -183,18 +172,6 @@ size_t receive_msg(char** msg, int fd) {
 	return len;
 }
 
-void addToClients(char** msg, int fd_C) {
-	//TODO
-	/*user[wsk]->fd =  fd_C;
-	 int itrMsg = 0;
-	 int iter = 2;
-
-	 for (;iter < sizeof(msg) / sizeof(char);){
-	 user[wsk]->nick[itrMsg] = msg[iter];
-	 iter++;
-	 }*/
-}
-
 void handle_login(const char* msg, size_t len, int fd, user_list* lista) {
 	//TODO:
 	//		* create user
@@ -208,13 +185,11 @@ void handle_login(const char* msg, size_t len, int fd, user_list* lista) {
 	//printf("%d\n", size);
 	//printf("%s\n", temp);
 	temp[size] = 0;
-	///user cur_usr = { fd, temp }; //tworze usera
 	user *ptr = malloc(sizeof(user));
 	ptr->fd = fd; //wskaznik na strukture user
 	ptr->nick = temp;
 
-
-	if (!(lista->add(lista,ptr))) { //dodaje do listy
+	if (!(lista->add(lista, ptr))) { //dodaje do listy
 		char* Ack = "1.0";
 		len = strlen(Ack) + 1;
 		write(fd, &len, sizeof(size_t));
@@ -230,8 +205,7 @@ void handle_login(const char* msg, size_t len, int fd, user_list* lista) {
 
 void handle_user_list(const char* msg, size_t len, int fd, user_list* lista) {
 
-	//char* usr_list;
-	len=0;
+	len = 0;
 	char** result = lista->print_users(lista, &len);
 	int i = 0;
 	//	printf("%s\n", result[i]);
