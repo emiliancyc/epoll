@@ -12,6 +12,7 @@ typedef struct user_list{
 	int(*add)(struct user_list* self,user* u);
 	int(*rm_by_fd)(struct user_list* self,int fd);
 	user*(*find_by_fd)(struct user_list* self, int fd);
+	char**(*print_users)(struct user_list* self, size_t size);
 }user_list;
 
 user_list* create_ul(size_t size);

@@ -89,6 +89,11 @@ int main(int argc, const char *argv[]) {
 
 	for (;;) {
 		i = epoll_wait(epoll_fd, es, CNT, -1);
+
+
+
+
+
 		if (i < 0) {
 			printf("Cannot wait for events\n");
 			close(epoll_fd);
@@ -225,18 +230,15 @@ void handle_login(const char* msg, size_t len, int fd, user_list* lista) {
 
 void handle_user_list(const char* msg, size_t len, int fd, user_list* lista) {
 
-	//if()
-	/*char* usr_list[1024];
-	int flag=1;
-	while(flag){
-		usr_list += lista->ctx->users->nick;
-		if(lista->ctx->users->nick == NULL)
-			flag=0;
-	}
-	//usr_list[]
-	len=strlen(usr_list);
-	write(fd, &len, sizeof(size_t));
-	write(fd, usr_list, len); */
+	//char* usr_list;
+	len=0;
+	char** result = lista->print_users(lista, &len);
+	int i = 0;
+	//	printf("%s\n", result[i]);
+	//}
+
+//	len=strlen(usr_list);
+	//write(fd, &len, sizeof(size_t));
+	//write(fd, usr_list, len);
 
 }
-
